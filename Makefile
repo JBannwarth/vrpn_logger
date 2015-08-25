@@ -1,9 +1,9 @@
 
 CC = gcc
-CXX = g++
+CXX = g++-4.9
 
-CFLAGS =   -O
-CCFLAGS =  -O -std=c++11
+CFLAGS = -O
+CCFLAGS = -std=c++11 -O
 
 
 VRPNDIR = $(HOME)/vrpn

@@ -34,13 +34,13 @@ Download the VRPN git repository and switch to version 7.33:
 
 ```
 git clone https://github.com/vrpn/vrpn.git
+cd vrpn
 git checkout tags/version_7.33
 ```
 
 Create a build folder and use the CMake GUI to generate the build files:
 
 ```
-cd vrpn
 mkdir build
 cmake-gui
 ```

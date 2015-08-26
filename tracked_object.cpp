@@ -5,6 +5,10 @@
 
 using namespace std;
 
+// -----------------------------------------------------------------------------
+// ----------------------------------- UTILITY ---------------------------------
+// -----------------------------------------------------------------------------
+
 template <typename T>
 std::string to_string(T value)
 {
@@ -13,16 +17,22 @@ std::string to_string(T value)
     return os.str();
 }
 
-tracked_object::tracked_object(string filename)
+// -----------------------------------------------------------------------------
+// -------------------------------- CONSTRUCTORS -------------------------------
+// -----------------------------------------------------------------------------
+
+tracked_object::tracked_object(string name, string filename)
 {
-    clear_orientation();
+    _name = name;
     _logging_filename = filename;
-    start_logging();
+
+    clear_pose();
+    _logging = false;
 }
 
-tracked_object::tracked_object()
+tracked_object::tracked_object(string name)
 {
-    clear_orientation();
+    _name = name;
 
     // Generate filename in format recording_yyyy_mm_dd_hh_mm.txt
     time_t t = time(0);
@@ -34,10 +44,17 @@ tracked_object::tracked_object()
     string hours   = to_string(now->tm_hour);
     string minutes = to_string(now->tm_min);
 
-    _logging_filename = "recording_" + year + "_" + month + "_" + day + "_" +
-        hours + "_" + minutes + ".txt";
+    _logging_filename = "recording_" + _name + "_" + year + "_" + month + "_" +
+        day + "_" + hours + "_" + minutes + ".csv";
+
+    clear_pose();
     _logging = false;
 }
+
+
+// -----------------------------------------------------------------------------
+// ------------------------------ LOGGING FUNCTIONS ----------------------------
+// -----------------------------------------------------------------------------
 
 void tracked_object::start_logging()
 {
@@ -54,25 +71,30 @@ void tracked_object::stop_logging()
     _logging_file.close();
 }
 
-void tracked_object::save_data()
+void tracked_object::log_data()
 {
-    double elapsed_time = (double)(clock() - _time_start) / CLOCKS_PER_SEC;
+    if (_logging)
+    {
+        double elapsed_time = (double)(clock() - _time_start) / CLOCKS_PER_SEC;
 
-    _logging_file << elapsed_time << "," << get_x() << "," << get_y() << "," << get_z() << "," <<
-        get_roll() << "," << get_pitch() << "," << get_yaw() << "\n";
+        _logging_file << elapsed_time << "," << get_x() << "," << get_y() <<
+            "," << get_z() << "," << get_roll() << "," << get_pitch() << "," <<
+            get_yaw() << "\n";
+    }
+    else
+    {
+        cout << "Err: logging not initialised, use start_logging() first" << endl;
+    }
 }
 
-void tracked_object::clear_orientation()
-{
-    for (int i = 0; i < 4; i++)
-    {
-        _orientation_quat[i] = 0;
-    }
+// -----------------------------------------------------------------------------
+// ------------------------------ UPDATE FUNCTIONS -----------------------------
+// -----------------------------------------------------------------------------
 
-    for (int i = 0; i < 3; i++)
-    {
-        _orientation_euler[i] = 0;
-    }
+void tracked_object::update_pose(double x, double y, double z, q_vec_type orientation_quat)
+{
+    update_position(x, y, z);
+    update_orientation(orientation_quat);
 }
 
 void tracked_object::update_position(double x, double y, double z)
@@ -86,24 +108,52 @@ void tracked_object::update_orientation(q_vec_type orientation_quat)
 {
     q_copy(_orientation_quat, orientation_quat);
     q_to_euler(_orientation_euler, _orientation_quat);
+}
 
-    if (_logging)
+void tracked_object::clear_pose()
+{
+    _x = 0;
+    _y = 0;
+    _z = 0;
+
+    for (int i = 0; i < 4; i++)
     {
-        save_data();
+        _orientation_quat[i] = 0;
+    }
+
+    for (int i = 0; i < 3; i++)
+    {
+        _orientation_euler[i] = 0;
     }
 }
+
+// -----------------------------------------------------------------------------
+// ------------------------------ PRINT FUNCTIONS ------------------------------
+// -----------------------------------------------------------------------------
 
 void tracked_object::print_orientation_euler()
 {
     cout << "roll: " << Q_RAD_TO_DEG(_orientation_euler[Q_ROLL]) <<
         " pitch: " << Q_RAD_TO_DEG(_orientation_euler[Q_PITCH]) <<
-        " yaw: " << Q_RAD_TO_DEG(_orientation_euler[Q_YAW]) << endl;
+        " yaw: " << Q_RAD_TO_DEG(_orientation_euler[Q_YAW]);
 }
 
 void tracked_object::print_orientation_quat()
 {
-    cout << "X: " << Q_RAD_TO_DEG(_orientation_quat[Q_X]) <<
-        " Y: " << Q_RAD_TO_DEG(_orientation_quat[Q_Y]) <<
-        " Z: " << Q_RAD_TO_DEG(_orientation_quat[Q_Z]) <<
-        " W: " << Q_RAD_TO_DEG(_orientation_quat[Q_W]) << endl;
+    cout << "quat_x: " << Q_RAD_TO_DEG(_orientation_quat[Q_X]) <<
+        " quat_y: " << Q_RAD_TO_DEG(_orientation_quat[Q_Y]) <<
+        " quat_z: " << Q_RAD_TO_DEG(_orientation_quat[Q_Z]) <<
+        " quat_w: " << Q_RAD_TO_DEG(_orientation_quat[Q_W]);
+}
+
+void tracked_object::print_position()
+{
+    cout << "pos_x: " << _x << " pos_y: " << _y << " pos_z: " << _z;
+}
+
+void tracked_object::print_pose()
+{
+    print_position();
+    cout << ", ";
+    print_orientation_euler();
 }

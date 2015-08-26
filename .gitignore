@@ -26,4 +26,7 @@
 *.exe
 *.out
 *.app
-vrpn_test
+vrpn_logger
+
+# Data files
+*.csv

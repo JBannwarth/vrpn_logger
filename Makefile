@@ -11,10 +11,10 @@ VRPNINC = -I$(VRPNDIR)/include
 VRPNLIB = -L$(VRPNDIR)/lib -lvrpn -lquat -lpthread
 
 INCS = $(VRPNINC)
-LIBS = $(VRPNLIB) -lm
+LIBS = $(VRPNLIB) -lm -lboost_system
 
-OBJS = vrpn_test.o
-BINS = vrpn_test
+OBJS = vrpn_logger.o
+BINS = vrpn_logger
 
 all: $(BINS) $(OBJS)
 
@@ -24,8 +24,8 @@ all: $(BINS) $(OBJS)
 .C.o :
 	$(CXX) $(CCFLAGS) $(INCS) -c $*.C
 
-vrpn_test : vrpn_test.o tracked_object.o
-	$(CXX) $(CCFLAGS) $(INCS) vrpn_test.o tracked_object.o $(LIBS) -o $@
+vrpn_logger : vrpn_logger.o tracked_object.o
+	$(CXX) $(CCFLAGS) $(INCS) vrpn_logger.o tracked_object.o $(LIBS) -o $@
 
 
 clean :

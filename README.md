@@ -1,11 +1,15 @@
-# indoor_gps
-Replace a GPS with an embedded PC that gets its pose from a motion capture system
+# vrpn_logger
+Log data streamed over VRRPN to csv format
+
+## To-Do
+
+Create Windows makefile
 
 ## Dependencies
 
 The VRPN library needs to have been installed on your PC. It is a cross-platform library and should work on most operating systems.
 
-### Installing VRPN
+### Installing VRPN on Linux
 
 First, you need to install the GUI for CMake.
 
@@ -37,6 +41,15 @@ Once the CMake GUI opens, select the vrpn root folder as your source folder and 
 ```
 cd build
 make
+sudo make install
 ```
 
 This should take a while. Once the compilation is done the generated static libraries - `libvrpn.a`, `libvrpnserver.a`, `libvrpn_timecode_generator.a`, `libvrpn_atmel.a` and `libquat.a` (a library for quarternions)- will be moved to the `/usr/local/lib/` folder, which is one of the default include folders on a Linux System.
+
+## Compiling vrpn_logger
+
+Simply run
+
+```
+make
+```

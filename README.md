@@ -8,11 +8,13 @@ Create Windows makefile
 
 ## Usage
 
-Simply open the command line and type
+Simply open the command line and type:
 
 ```
 ./vrpn_logger 192.168.20.4 object_name filename.csv
 ```
+
+Press the enter key on your keyboard to end data recording.
 
 ## Dependencies
 

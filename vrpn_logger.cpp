@@ -8,7 +8,7 @@
 #include <iostream>
 #include <ctime>
 #include <sstream>
-#include <pthread.h>
+#include <thread>
 
 using namespace std;
 
@@ -36,7 +36,7 @@ void VRPN_CALLBACK handle_tracker(void* userData, const vrpn_TRACKERCB t )
 	cout << endl;
 }
 
-void *logging_thread(void*)
+void logging_thread()
 {
 	string vrpn_address = object_name + "@" + ip_address;
 	// ostringstream address;
@@ -90,9 +90,9 @@ int main(int argc, char* argv[])
 			object_name = argv[2];
 			logging_filename = argv[3];
 		}
-		pthread_t log_t;
-
-		pthread_create(&log_t, NULL, &logging_thread, NULL);
+		// pthread_t log_t;
+		thread log_t(logging_thread);
+		// pthread_create(&log_t, NULL, &logging_thread, NULL);
 
 		cin.get();
 
@@ -100,7 +100,9 @@ int main(int argc, char* argv[])
 
 		// Wait for thread to close
 		void* result;
-		pthread_join(log_t, &result);
+		log_t.join();
+
+		// pthread_join(log_t, &result);
 
 	}
 

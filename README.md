@@ -1,9 +1,18 @@
 # vrpn_logger
-Log data streamed over VRRPN to csv format
+
+Log data streamed by motion capture PC over VRPN to csv format
 
 ## To-Do
 
 Create Windows makefile
+
+## Usage
+
+Simply open the command line and type
+
+```
+./vrpn_logger 192.168.20.4 object_name filename.csv
+```
 
 ## Dependencies
 

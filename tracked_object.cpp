@@ -28,6 +28,11 @@ tracked_object::tracked_object(string name, string filename)
 
     clear_pose();
     _logging = false;
+
+	_start_time_s = -1;
+	_start_time_us = -1;
+	//vrpn_tracker = new vrpn_Tracker_Remote(name.c_str());
+	//vrpn_tracker->register_change_handler(0, handle_tracker);
 }
 
 tracked_object::tracked_object(string name)
@@ -49,6 +54,12 @@ tracked_object::tracked_object(string name)
 
     clear_pose();
     _logging = false;
+
+	_start_time_s = -1;
+	_start_time_us = -1;
+
+	//vrpn_tracker = new vrpn_Tracker_Remote(name.c_str());
+	//vrpn_tracker->register_change_handler(0, handle_tracker);
 }
 
 
@@ -61,8 +72,7 @@ void tracked_object::start_logging()
     _logging = true;
     _logging_file.open(_logging_filename.c_str());
 
-    _logging_file << "time,x,y,z,roll,pitch,yaw\n";
-    _time_start = (double)clock() / CLOCKS_PER_SEC;
+	_logging_file << "time;x;y;z;roll;pitch;yaw\n";
 }
 
 void tracked_object::stop_logging()
@@ -75,10 +85,8 @@ void tracked_object::log_data()
 {
     if (_logging)
     {
-        double elapsed_time = (double)(clock() - _time_start) / CLOCKS_PER_SEC;
-
-        _logging_file << elapsed_time << "," << get_x() << "," << get_y() <<
-            "," << get_z() << "," << get_roll() << "," << get_pitch() << "," <<
+ 		_logging_file << _time << ";" << get_x() << ";" << get_y() <<
+			";" << get_z() << ";" << get_roll() << ";" << get_pitch() << ";" <<
             get_yaw() << "\n";
     }
     else
@@ -91,10 +99,26 @@ void tracked_object::log_data()
 // ------------------------------ UPDATE FUNCTIONS -----------------------------
 // -----------------------------------------------------------------------------
 
-void tracked_object::update_pose(double x, double y, double z, q_vec_type orientation_quat)
+//void VRPN_CALLBACK tracked_object::handle_tracker(void* userData, const vrpn_TRACKERCB t)
+//{
+//	_x = t.pos[0];
+//	_y = t.pos[1];
+//	_z = t.pos[2];
+//
+//	_orientation_quat[Q_X] = t.quat[0];
+//	_orientation_quat[Q_Y] = t.quat[1];
+//	_orientation_quat[Q_Z] = t.quat[2];
+//	_orientation_quat[Q_W] = t.quat[3];
+//
+//	q_to_euler(_orientation_euler, _orientation_quat);
+//}
+
+void tracked_object::update_pose(double x, double y, double z, q_vec_type orientation_quat,
+	double time_s, double time_us)
 {
-    update_position(x, y, z);
-    update_orientation(orientation_quat);
+	update_position(x, y, z);
+	update_orientation(orientation_quat);
+	update_time(time_s, time_us);
 }
 
 void tracked_object::update_position(double x, double y, double z)
@@ -108,6 +132,17 @@ void tracked_object::update_orientation(q_vec_type orientation_quat)
 {
     q_copy(_orientation_quat, orientation_quat);
     q_to_euler(_orientation_euler, _orientation_quat);
+}
+
+void tracked_object::update_time(double time_s, double time_us)
+{
+	if (_start_time_s == -1)
+	{
+		_start_time_s = time_s;
+		_start_time_us = time_us;
+	}
+
+	_time = (time_s - _start_time_s) + (time_us - _start_time_us) / 1000000;
 }
 
 void tracked_object::clear_pose()
@@ -126,6 +161,11 @@ void tracked_object::clear_pose()
         _orientation_euler[i] = 0;
     }
 }
+
+//void tracked_object::update()
+//{
+//	vrpn_tracker->mainloop();
+//}
 
 // -----------------------------------------------------------------------------
 // ------------------------------ PRINT FUNCTIONS ------------------------------

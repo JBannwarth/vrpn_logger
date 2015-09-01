@@ -21,10 +21,7 @@
     <ClCompile Include="vrpn_logger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tracking_register.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="input_parser.cpp">
+    <ClCompile Include="quat_ez.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,11 +29,8 @@
     <ClInclude Include="tracked_object.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tracking_register.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="input_parser.hpp">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="quat_ez.hpp">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,50 +1,47 @@
 #ifndef TRACKED_OBJECT
 #define TRACKED_OBJECT
 
-#include "quat.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <ctime>
+#include <vector>
 #include "vrpn_Tracker.h"
+#include "quat_ez.hpp"
 
 using namespace std;
-
 class tracked_object
 {
 protected:
-    string     _name;
-    q_type     _orientation_quat;
-    q_vec_type _orientation_euler;
-    string     _logging_filename;
-    ofstream   _logging_file;
-    bool       _logging;
-	double     _time;
-	double     _start_time_s, _start_time_us;
-    double     _x, _y, _z;
+	vector<rotation_quat>  _orientations_quat;
+	vector<rotation_euler> _orientations_euler;
+	vector<position>       _positions;
+	vector<double>         _time;
 
-    void clear_pose();
-
-	vrpn_Tracker_Remote* vrpn_tracker;
-
+	double _start_time_s, _start_time_us;
+	string _name;
+	
 public:
-    tracked_object(string name, string filename);
     tracked_object(string name);
 
-    double get_roll()  { return _orientation_euler[Q_ROLL]; }
-    double get_pitch() { return _orientation_euler[Q_PITCH]; }
-    double get_yaw()   { return _orientation_euler[Q_YAW]; }
-    double get_x()     { return _x; }
-    double get_y()     { return _y; }
-    double get_z()     { return _z; }
+	int size() { return _time.size(); }
 
-    void start_logging();
-    void stop_logging();
-    void log_data();
+	position       get_position(int i) { return _positions.at(i); }
+	rotation_euler get_euler(int i)    { return _orientations_euler.at(i); }
+	rotation_quat  get_quat(int i)     { return _orientations_quat.at(i); }
+	double         get_time(int i)     { return _time.at(i); }
+	string         get_name()          { return _name; }
 
-    void update_pose(double x, double y, double z, q_vec_type orientation_quat, double time_s, double time_us);
-    void update_orientation(q_vec_type orientation_quat);
-    void update_position(double x, double y, double z);
+	double get_roll()  { return _orientations_euler.back().roll; }
+	double get_pitch() { return _orientations_euler.back().pitch; }
+	double get_yaw()   { return _orientations_euler.back().yaw; }
+	double get_x()     { return _positions.back().x; }
+	double get_y()     { return _positions.back().y; }
+	double get_z()     { return _positions.back().z; }
+
+	void update_pose(position current_position, rotation_quat current_orientation, double time_s, double time_us);
+	void update_orientation(rotation_quat current_orientation);
+	void update_position(position current_position);
 	void update_time(double time_s, double time_us);
 
     void print_orientation_euler();

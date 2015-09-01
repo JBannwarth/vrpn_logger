@@ -75,15 +75,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="input_parser.cpp" />
+    <ClCompile Include="quat_ez.cpp" />
     <ClCompile Include="tracked_object.cpp" />
-    <ClCompile Include="tracking_register.cpp" />
     <ClCompile Include="vrpn_logger.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="input_parser.hpp" />
+    <ClInclude Include="quat_ez.hpp" />
     <ClInclude Include="tracked_object.hpp" />
-    <ClInclude Include="tracking_register.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

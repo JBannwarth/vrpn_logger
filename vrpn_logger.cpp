@@ -2,6 +2,7 @@
 #include "quat.h"
 
 #include "tracked_object.hpp"
+#include "quat_ez.hpp"
 
 #include <iostream>
 #include <ctime>
@@ -10,6 +11,7 @@
 #include <thread>
 #include <vector>
 #include <ctime>
+#include <fstream>
 
 using namespace std;
 
@@ -27,29 +29,33 @@ vector<vrpn_Tracker_Remote*> vrpn_trackers;
 vector<double> start_time_s;
 vector<double> start_time_us;
 
-struct tracking_info {
+struct tracking_info
+{
 	vector<string> object_names;
 	string ip_address;
 	string logging_filename;
 	string logging_extension;
-	char separator;
+	string separator;
 };
 
+void save_data(tracking_info tracking_setup);
 int parse_inputs(int argc, char* argv[], tracking_info* tracking_setup);
 
 void VRPN_CALLBACK handle_tracker(void* object_pointer, const vrpn_TRACKERCB t)
 {
-	q_type tracked_quat;
+	rotation_quat tracked_quat;
+	tracked_quat.qx = t.quat[0];
+	tracked_quat.qy = t.quat[1];
+	tracked_quat.qz = t.quat[2];
+	tracked_quat.qw = t.quat[3];
+
+	position tracked_pos;
+	tracked_pos.x = t.pos[0];
+	tracked_pos.y = t.pos[1];
+	tracked_pos.z = t.pos[2];
+
 	tracked_object* object = (tracked_object*)object_pointer;
-
-	// Put quaternion in format used by quat library
-	tracked_quat[Q_X] = t.quat[0];
-	tracked_quat[Q_Y] = t.quat[1];
-	tracked_quat[Q_Z] = t.quat[2];
-	tracked_quat[Q_W] = t.quat[3];
-
-	object->update_pose(t.pos[0], t.pos[1], t.pos[2], tracked_quat, t.msg_time.tv_sec, t.msg_time.tv_usec);
-	object->log_data();
+	object->update_pose(tracked_pos, tracked_quat, t.msg_time.tv_sec, t.msg_time.tv_usec);
 }
 
 void logging_thread(tracking_info& tracking_setup)
@@ -57,11 +63,7 @@ void logging_thread(tracking_info& tracking_setup)
 
 	for (int i = 0; i < (int)tracking_setup.object_names.size(); i++)
 	{
-		// Log each object as filename_objectname.extension
-		string filename = tracking_setup.logging_filename + "_" +
-			tracking_setup.object_names.at(i) + '.' + tracking_setup.logging_extension;
-
-		objects.push_back(new tracked_object(tracking_setup.object_names.at(i), filename));
+		objects.push_back(new tracked_object(tracking_setup.object_names.at(i)));
 	}
 
 	// Initiate callback for each object
@@ -71,8 +73,6 @@ void logging_thread(tracking_info& tracking_setup)
 		string vrpn_address = tracking_setup.object_names.at(i) + "@" + tracking_setup.ip_address;
 
 		vrpn_trackers.push_back(new vrpn_Tracker_Remote(vrpn_address.c_str()));
-
-		objects.at(i)->start_logging();
 
 		vrpn_trackers.at(i)->register_change_handler((void*)objects.at(i), handle_tracker);
 	}
@@ -85,10 +85,7 @@ void logging_thread(tracking_info& tracking_setup)
 		}
 	}
 
-	for (int i = 0; i < (int)vrpn_trackers.size(); i++)
-	{
-		objects.at(i)->stop_logging();
-	}
+	save_data(tracking_setup);
 }
 
 int main(int argc, char* argv[])
@@ -111,6 +108,64 @@ int main(int argc, char* argv[])
 	}
 
 	return 0;
+}
+
+void save_data(tracking_info tracking_setup)
+{
+	// Log each object as filename_objectname.extension
+	string filename = tracking_setup.logging_filename + "." + tracking_setup.logging_extension;
+	string sep = tracking_setup.separator;
+	ofstream logging_file;
+	logging_file.open(filename.c_str());
+
+
+	// Find object with the most saved data
+	int max_data_index = 0;
+	for (int i = 1; i < (int)objects.size(); i++)
+	{
+		if (objects.at(i)->size() > objects.at(max_data_index)->size())
+		{
+			max_data_index = i;
+		}
+	}
+
+	// Create headers
+	int max_data_length = objects.at(max_data_index)->size();
+
+	for (int j = 0; j < (int)objects.size(); j++)
+	{
+		string name = objects.at(j)->get_name();
+		logging_file << "time_" << name << sep << "x_" << name << sep << "y_" << name << sep <<
+			"z_" << name << sep << "roll_" << name << sep << "pitch_" << name << sep << "yaw_" <<
+			name << sep;
+	}
+	logging_file << endl;
+
+	// Save data
+	for (int i = 0; i < max_data_length; i++)
+	{
+		for (int j = 0; j < (int)objects.size(); j++)
+		{
+			if (i < (int)objects.at(j)->size())
+			{
+				logging_file << objects.at(j)->get_time(i) << sep <<
+					objects.at(j)->get_position(i).x << sep <<
+					objects.at(j)->get_position(i).y << sep <<
+					objects.at(j)->get_position(i).z << sep <<
+					objects.at(j)->get_euler(i).roll << sep <<
+					objects.at(j)->get_euler(i).pitch << sep <<
+					objects.at(j)->get_euler(i).yaw << sep;
+			}
+			else
+			{
+				// There's no more data to save for this object
+				logging_file << sep << sep << sep << sep << sep << sep << sep;
+			}
+		}
+		logging_file << endl;
+	}
+
+	logging_file.close();
 }
 
 int parse_inputs(int argc, char* argv[], tracking_info* tracking_setup)
@@ -140,7 +195,7 @@ int parse_inputs(int argc, char* argv[], tracking_info* tracking_setup)
 
 		tracking_setup->logging_filename = "recording_" + year + "_" + month + "_" +
 			day + "_" + hours + "_" + minutes;
-		tracking_setup->logging_extension = ".csv";
+		tracking_setup->logging_extension = "csv";
 		tracking_setup->separator = ';';
 		tracking_setup->ip_address = "localhost";		
 

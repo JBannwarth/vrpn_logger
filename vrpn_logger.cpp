@@ -59,7 +59,7 @@ void logging_thread(tracking_info& tracking_setup)
 	{
 		// Log each object as filename_objectname.extension
 		string filename = tracking_setup.logging_filename + "_" +
-			tracking_setup.object_names.at(i) + tracking_setup.logging_extension;
+			tracking_setup.object_names.at(i) + '.' + tracking_setup.logging_extension;
 
 		objects.push_back(new tracked_object(tracking_setup.object_names.at(i), filename));
 	}

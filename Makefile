@@ -1,6 +1,6 @@
 
 CC = gcc
-CXX = g++-4.9
+CXX = g++-4.9 -std=c++11
 
 CFLAGS = -O
 CCFLAGS = -std=c++11 -O
@@ -8,7 +8,7 @@ CCFLAGS = -std=c++11 -O
 
 VRPNDIR = $(HOME)/vrpn
 VRPNINC = -I$(VRPNDIR)/include
-VRPNLIB = -L$(VRPNDIR)/lib -lvrpn -lquat -lpthread
+VRPNLIB = -L$(VRPNDIR)/lib -lvrpn -lquat
 
 INCS = $(VRPNINC)
 LIBS = $(VRPNLIB) -lm -lboost_system

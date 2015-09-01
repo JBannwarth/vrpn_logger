@@ -4,7 +4,10 @@ Log data streamed by motion capture PC over VRPN to csv format
 
 ## To-Do
 
-Create Windows makefile
+- [x] Create Windows Visual Studio solution
+- [ ] Move logging functionalities outside of tracked_objects to save everything to one file
+- [x] Create input parser
+    - [x] Handle command line argument specifiers, e.g. `./vrpn_logger -ip=192.168.20.4 -filename=test.csv -objectname=quadcopter -separator=comma`
 
 ## Usage
 

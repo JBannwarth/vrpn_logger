@@ -91,6 +91,7 @@ Then, open `vrpn.sln` using Visual Studio. Update the solution files if prompted
 > - Click on "All Options" under the "C/C++" heading
 > - Scroll down and change "Runtime Library" from "Multi-threaded Dll (/MD)" to "Multi-threaded (/MT)" - this is necessary in order to avoid having to include the visual studio DLLs along with the software
 > - Click "OK" to close the window
+> - Do the exact same thing for vrpn in the Solution Explorer
 > - Finally, set Visual Studio to compile a "Release" build instead of a "Debug" build. The option is located in a box below the menu bars.
 
 Once the files have been processed (and you have followed the instructions above if needed), build the following solutions (right click on the relevant solution in the solution bar and choose "build"): `quatlib` and `vrpn`.

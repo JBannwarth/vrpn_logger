@@ -1,33 +1,47 @@
+/*
+* vrpn_logger.cpp
+* Log data streamed over vrpn.
+* Written by: Jérémie Bannwarth, jban039@aucklanduni.ac.nz
+* University of Auckland, 2015
+*/
+
 #include "vrpn_Tracker.h"
-#include "quat.h"
 
 #include "tracked_object.hpp"
 #include "quat_ez.hpp"
 
 #include <iostream>
+#include <fstream>
 #include <ctime>
-#include <sstream>
 #include <string>
 #include <thread>
 #include <vector>
 #include <ctime>
-#include <fstream>
+
 
 using namespace std;
 
-// Command line arguments tags
+// -----------------------------------------------------------------------------
+// --------------------------- COMMAND LINE ARGUMENTS --------------------------
+// -----------------------------------------------------------------------------
+
 string TAG_IP_ADDRESS = "-ip=";
 string TAG_FILE_NAME =  "-filename=";
 string TAG_SEPARATOR =  "-separator=";
 string TAG_OBJECT_NAMES = "-objectnames=";
 
-bool stop = false;
+// -----------------------------------------------------------------------------
+// ------------------------------- GLOBAL VARIABLES ----------------------------
+// -----------------------------------------------------------------------------
+
+bool stop_thread = false;
 
 vector<tracked_object*> objects;
 vector<vrpn_Tracker_Remote*> vrpn_trackers;
 
-vector<double> start_time_s;
-vector<double> start_time_us;
+// -----------------------------------------------------------------------------
+// ----------------------------------- STRUCTS ---------------------------------
+// -----------------------------------------------------------------------------
 
 struct tracking_info
 {
@@ -38,8 +52,44 @@ struct tracking_info
 	string separator;
 };
 
+// -----------------------------------------------------------------------------
+// ----------------------------- FUNCTION PROTOTYPES ---------------------------
+// -----------------------------------------------------------------------------
+
 void save_data(tracking_info tracking_setup);
 int parse_inputs(int argc, char* argv[], tracking_info* tracking_setup);
+void VRPN_CALLBACK handle_tracker(void* object_pointer, const vrpn_TRACKERCB t);
+void logging_thread(tracking_info& tracking_setup);
+
+// -----------------------------------------------------------------------------
+// ------------------------------------ MAIN -----------------------------------
+// -----------------------------------------------------------------------------
+
+int main(int argc, char* argv[])
+{
+	tracking_info tracking_setup;
+
+	int valid_input = parse_inputs(argc, argv, &tracking_setup);
+
+	if (valid_input != 0)
+	{
+		thread log_t(logging_thread, ref(tracking_setup));
+
+		// Wait for user to press the enter key
+		cin.get();
+
+		stop_thread = true;
+
+		// Wait for thread to close
+		log_t.join();
+	}
+
+	return 0;
+}
+
+// -----------------------------------------------------------------------------
+// ---------------------------------- FUNCTIONS --------------------------------
+// -----------------------------------------------------------------------------
 
 void VRPN_CALLBACK handle_tracker(void* object_pointer, const vrpn_TRACKERCB t)
 {
@@ -77,7 +127,7 @@ void logging_thread(tracking_info& tracking_setup)
 		vrpn_trackers.at(i)->register_change_handler((void*)objects.at(i), handle_tracker);
 	}
 
-	while( !stop )
+	while (!stop_thread)
 	{
 		for (int i = 0; i < (int)vrpn_trackers.size(); i++)
 		{
@@ -86,28 +136,6 @@ void logging_thread(tracking_info& tracking_setup)
 	}
 
 	save_data(tracking_setup);
-}
-
-int main(int argc, char* argv[])
-{
-	tracking_info tracking_setup;
-
-	int valid_input = parse_inputs(argc, argv, &tracking_setup);
-
-	if (valid_input != 0)
-	{
-		thread log_t(logging_thread, ref(tracking_setup));
-
-		// Wait for user to press the enter key
-		cin.get();
-
-		stop = true;
-
-		// Wait for thread to close
-		log_t.join();
-	}
-
-	return 0;
 }
 
 void save_data(tracking_info tracking_setup)
@@ -127,6 +155,12 @@ void save_data(tracking_info tracking_setup)
 		{
 			max_data_index = i;
 		}
+	}
+
+	// If saving to csv, add tag to ensure excel import compatibility
+	if (tracking_setup.logging_extension.compare("csv") == 0)
+	{
+		logging_file << "sep = " << tracking_setup.separator << endl;
 	}
 
 	// Create headers
@@ -196,7 +230,7 @@ int parse_inputs(int argc, char* argv[], tracking_info* tracking_setup)
 		tracking_setup->logging_filename = "recording_" + year + "_" + month + "_" +
 			day + "_" + hours + "_" + minutes;
 		tracking_setup->logging_extension = "csv";
-		tracking_setup->separator = ';';
+		tracking_setup->separator = ',';
 		tracking_setup->ip_address = "localhost";		
 
 		bool found_object_name = false;
@@ -205,6 +239,7 @@ int parse_inputs(int argc, char* argv[], tracking_info* tracking_setup)
 		{
 			string argument = argv[i];
 
+			// Check which tag the user entered
 			if (argument.compare(0, TAG_IP_ADDRESS.size(), TAG_IP_ADDRESS) == 0)
 			{
 				// Check validity of ip address

@@ -1,5 +1,8 @@
-#include <string>
-#include <sstream>
+/*
+* tracked_object.cpp
+* Written by: Jérémie Bannwarth, jban039@aucklanduni.ac.nz
+* University of Auckland, 2015
+*/
 
 #include "tracked_object.hpp"
 
@@ -80,7 +83,8 @@ void tracked_object::print_orientation_quat()
 
 void tracked_object::print_position()
 {
-	cout << "pos_x: " << _positions.back().x << " pos_y: " << _positions.back().y <<
+	cout << "pos_x: " << _positions.back().x <<
+		" pos_y: " <<_positions.back().y <<
 		" pos_z: " << _positions.back().z;
 }
 

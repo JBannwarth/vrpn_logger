@@ -102,7 +102,7 @@ git checkout tags/version_07.33
 
 Then, open `vrpn.sln` using Visual Studio. Update the solution files if prompted.
 
-> If you are not interested in modifying the software, follow these extra steps:
+If you want to be able to use the program on any computer or if you are not interested in modifying the software, follow these extra steps:
 > - Right click on quatlib in the Solution Explorer
 > - Select Properties
 > - At the top of the window, switch to the "Release" configuration

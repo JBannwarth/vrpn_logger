@@ -1,6 +1,7 @@
 # vrpn_logger
 
 Written by: Jérémie Bannwarth
+
 University of Auckland, 2015
 
 Log data streamed by motion capture PC over VRPN to csv format.

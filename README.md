@@ -1,23 +1,41 @@
 # vrpn_logger
 
-Log data streamed by motion capture PC over VRPN to csv format
+Written by: Jérémie Bannwarth
+University of Auckland, 2015
+
+Log data streamed by motion capture PC over VRPN to csv format.
 
 ## To-Do
 
-- [x] Create Windows Visual Studio solution
-- [ ] Move logging functionalities outside of tracked_objects to save everything to one file
-- [x] Create input parser
-    - [x] Handle command line argument specifiers, e.g. `./vrpn_logger -ip=192.168.20.4 -filename=test.csv -objectname=quadcopter -separator=comma`
+- [x] Release version 1.0
+- [ ] Add graphical interface (not anytime soon)
 
 ## Usage
 
-Simply open the command line and type:
+If you are running the program on the computer that is running Vicon Tracker, simply open the command line and type:
 
 ```
-./vrpn_logger 192.168.20.4 object_name filename.csv
+vrpn_logger.exe -objectnames=name1,name2
 ```
 
-Press the enter key on your keyboard to end data recording.
+Where `name1` and `name2` are the names of the objects you are tracking (the program supports any number of objects). 
+
+Press the enter key on your keyboard to end data recording. By default the object poses will be saved in the executable's folder in a comma delimited (`,`) file called recording_YYYY_MM_DD_HH_MM.csv.
+
+The following table describes additional command line options that can be used to change the program's behaviour:
+
+| Command line option | Example          | Default value | Description |
+| ------------------- | ---------------- | ------------- | ----------- |
+| `-objectnames=` | `-objectnames=quadcopter` | No default | Choose the name of the object to track. Should be identical to the name used in Vicon Tracker |
+| `-ip=` | `-ip=10.0.0.1` | `localhost` | Choose which IP address to connect to. The motion capture PC's address is `10.0.0.1` |
+| `-filename=` | `-filename=myfile.txt` | `recording_YYYY_MM_DD_HH_MM.csv` | Choose the name of the file to save data to **Does not handle spaces** |
+| `-separator=` | `-separator=;` | `,` | Choose how values are separated when saved to a file |
+
+Make sure to separate all the options by a space. E.g.
+
+```
+vrpn_logger.exe -objectnames=quadcopter,tree -ip=10.0.0.1 -filename=myrecordingdata.csv -separator=\t
+```
 
 ## Dependencies
 

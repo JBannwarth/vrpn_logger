@@ -28,7 +28,7 @@ The following table describes additional command line options that can be used t
 | ------------------- | ---------------- | ------------- | ----------- |
 | `-objectnames=` | `-objectnames=quadcopter` | No default | Choose the name of the object to track. Should be identical to the name used in Vicon Tracker |
 | `-ip=` | `-ip=10.0.0.1` | `localhost` | Choose which IP address to connect to. The motion capture PC's address is `10.0.0.1` |
-| `-filename=` | `-filename=myfile.txt` | `recording_YYYY_MM_DD_HH_MM.csv` | Choose the name of the file to save data to **Does not handle spaces** |
+| `-filename=` | `-filename=myfile.txt` | `recording_YYYY_MM_DD_HH_MM.csv` | Choose the name of the file to save data to **(does not handle spaces)** |
 | `-separator=` | `-separator=;` | `,` | Choose how values are separated when saved to a file |
 
 Make sure to separate all the options by a space. E.g.

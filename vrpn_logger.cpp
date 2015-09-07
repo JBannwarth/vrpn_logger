@@ -117,7 +117,7 @@ void logging_thread(tracking_info& tracking_setup)
 	}
 
 	// Initiate callback for each object
-	
+
 	for (int i = 0; i < (int)objects.size(); i++)
 	{
 		string vrpn_address = tracking_setup.object_names.at(i) + "@" + tracking_setup.ip_address;
@@ -127,6 +127,9 @@ void logging_thread(tracking_info& tracking_setup)
 		vrpn_trackers.at(i)->register_change_handler((void*)objects.at(i), handle_tracker);
 	}
 
+	cout << endl << "Recording data... Press [Enter] to stop and save data " <<
+		"to the disc." << endl << endl;
+	
 	while (!stop_thread)
 	{
 		for (int i = 0; i < (int)vrpn_trackers.size(); i++)
@@ -146,6 +149,7 @@ void save_data(tracking_info tracking_setup)
 	ofstream logging_file;
 	logging_file.open(filename.c_str());
 
+	cout << endl << "Saving data to " << filename << "..." << endl;
 
 	// Find object with the most saved data
 	int max_data_index = 0;
@@ -200,6 +204,8 @@ void save_data(tracking_info tracking_setup)
 	}
 
 	logging_file.close();
+
+	cout << endl << "Data saved" << endl << endl;
 }
 
 int parse_inputs(int argc, char* argv[], tracking_info* tracking_setup)
@@ -226,6 +232,11 @@ int parse_inputs(int argc, char* argv[], tracking_info* tracking_setup)
 		string day = to_string(now->tm_mday);
 		string hours = to_string(now->tm_hour);
 		string minutes = to_string(now->tm_min);
+
+		if (stoi(month)   < 10) { month   = "0" + month; }
+		if (stoi(day)     < 10) { day     = "0" + day; }
+		if (stoi(hours)   < 10) { hours   = "0" + hours; }
+		if (stoi(minutes) < 10) { minutes = "0" + minutes; }
 
 		tracking_setup->logging_filename = "recording_" + year + "_" + month + "_" +
 			day + "_" + hours + "_" + minutes;

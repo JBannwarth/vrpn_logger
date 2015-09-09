@@ -28,14 +28,14 @@ The following table describes additional command line options that can be used t
 | Command line option | Example          | Default value | Description |
 | ------------------- | ---------------- | ------------- | ----------- |
 | `-objectnames=` | `-objectnames=quadcopter` | No default | Choose the names of the objects to track. Should be identical to the names used in Vicon Tracker |
-| `-ip=` | `-ip=10.0.0.1` | `localhost` | Choose which IP address to connect to. The motion capture PC's address is `10.0.0.1` |
+| `-ip=` | `-ip=10.0.0.10` | `localhost` | Choose which IP address to connect to. The motion capture PC's address is `10.0.0.10` |
 | `-filename=` | `-filename=myfile.txt` | `recording_YYYY_MM_DD_HH_MM.csv` | Choose the name of the file to save data to **(does not handle spaces)** |
 | `-separator=` | `-separator=;` | `,` | Choose how values are separated when saved to a file |
 
 Make sure to separate all the options by a space. E.g.
 
 ```
-vrpn_logger.exe -objectnames=quadcopter,tree -ip=10.0.0.1 -filename=myrecordingdata.csv -separator=\t
+vrpn_logger.exe -objectnames=quadcopter,tree -ip=10.0.0.10 -filename=myrecordingdata.csv -separator=\t
 ```
 
 ## Dependencies

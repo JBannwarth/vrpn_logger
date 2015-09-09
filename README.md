@@ -87,7 +87,7 @@ First, make sure you have a C++11 compatible compiler (if in doubt, install g++-
 
 Then, simply `cd` to the relevant folder and run `make`.
 
-### Compiling on MacOS X
+### Compiling on OSX
 
 Very similar to compiling on Linux.
 
@@ -125,7 +125,7 @@ make
 sudo make install
 ```
 
-This should take a while. Once the compilation is done the generated static libraries - `libvrpn.a`, `libvrpnserver.a`, `libvrpn_timecode_generator.a`, `libvrpn_atmel.a` and `libquat.a` (a library for quarternions)- will be moved to the `/usr/local/lib/` folder, which is one of the default include folders on a MacOS X System.
+This should take a while. Once the compilation is done the generated static libraries - `libvrpn.a`, `libvrpnserver.a`, `libvrpn_timecode_generator.a`, `libvrpn_atmel.a` and `libquat.a` (a library for quarternions)- will be moved to the `/usr/local/lib/` folder, which is one of the default include folders on an OSX System.
 
 #### Compiling vrpn_logger
 

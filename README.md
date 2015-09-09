@@ -137,7 +137,7 @@ Simply `cd` to the relevant folder and run `make`.
 
 First, `cd` to the desired folder.
 
-First, download the vrpn library repository:
+Then, download the vrpn library repository:
 
 ```
 git clone --recursive https://github.com/vrpn/vrpn.git

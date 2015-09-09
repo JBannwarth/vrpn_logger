@@ -87,6 +87,50 @@ First, make sure you have a C++11 compatible compiler (if in doubt, install g++-
 
 Then, simply `cd` to the relevant folder and run `make`.
 
+### Compiling on MacOS X
+
+Very similar to compiling on Linux.
+
+#### Installing VRPN
+
+Install the GUI for cmake. Get the "Mac OSX 32-bit Universal (for Intel or PPC, Tiger/10.4 or later)" file from this address:
+
+[Link](http://www.cmake.org/download/)
+
+Extract it in your Applications folder.
+
+Then, `cd` to the directory you want to store the files in.
+
+Download the VRPN git repository and switch to version 7.33:
+
+```
+git clone --recursive https://github.com/vrpn/vrpn.git
+cd vrpn
+git checkout tags/version_07.33
+```
+
+Create a build folder:
+
+```
+mkdir build
+```
+
+Open the CMake GUI from your Applications folder. Once the CMake GUI opens, select the vrpn root folder as your source folder and the build folder you created previously as the target folder. Click "Configure" and then "Generate".
+
+`cd` to the build directory and compile the program:
+
+```
+cd build
+make
+sudo make install
+```
+
+This should take a while. Once the compilation is done the generated static libraries - `libvrpn.a`, `libvrpnserver.a`, `libvrpn_timecode_generator.a`, `libvrpn_atmel.a` and `libquat.a` (a library for quarternions)- will be moved to the `/usr/local/lib/` folder, which is one of the default include folders on a MacOS X System.
+
+#### Compiling vrpn_logger
+
+Simply `cd` to the relevant folder and run `make`.
+
 ### Compiling the software on Windows using Visual Studio
 
 > The following procedure was tested using Visual Studio 2013

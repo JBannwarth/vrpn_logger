@@ -1,17 +1,17 @@
 
 CC = gcc
-CXX = g++-4.9 -std=c++11
+CXX = g++ -std=c++11
 
 CFLAGS = -O
 CCFLAGS = -std=c++11 -O
 
 
-VRPNDIR = $(HOME)/vrpn
-VRPNINC = -I$(VRPNDIR)/include
+VRPNDIR = /usr/local
+VRPNINC = -I$(VRPNDIR)
 VRPNLIB = -L$(VRPNDIR)/lib -lvrpn -lquat
 
 INCS = $(VRPNINC)
-LIBS = $(VRPNLIB) -lm -lboost_system
+LIBS = $(VRPNLIB) -lm
 
 OBJS = vrpn_logger.o
 BINS = vrpn_logger
